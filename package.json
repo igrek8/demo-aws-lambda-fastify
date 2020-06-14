@@ -1,0 +1,15 @@
+{
+  "name": "movie-metadata-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/joyn-engineering/movie-metadata-service-igrek8",
+  "author": "Igor <igor.korchagin8@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.5"
+  },
+  "dependencies": {
+    "tslib": "^2.0.0"
+  }
+}
