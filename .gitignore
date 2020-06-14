@@ -117,3 +117,6 @@ dist
 
 # typescript
 **/*.js
+
+# jest
+!jest.config.js
