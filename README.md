@@ -4,20 +4,20 @@
 
 Hello,
 
-this is part of your interview with 7TV that aims to test your ability to write services that efficiently solve problems we have in our business.
+this is part of your interview with Joyn that aims to test your ability to write services that efficiently solve problems we have in our business.
 
 Please read this document carefully before starting, as it outlines your task, the constraints and by what criteria you will be evaluated.
 
 Use git to document your work. When finished, please create a pull request on the `master` branch, according to the following naming convention: `<your name>-solution`
 
-We will look at the git history of your pull request to determine the way you approached this and the time you roughly spent on the task.  **Do not squash commits or bundle many unrelated changes into one large commit.**
+We will look at the git history of your pull request to determine the way you approached this.  **Please do not squash commits or bundle many unrelated changes into one large commit.**
 
 ## The service
 
 You are tasked to implement a RESTful API that provides the following two basic functionalities to retrieve movie metadata from a content catalogue.
 
-The data used for this comes from two sources
-- Typically, our own movie data would come from a database, but to simplify this we use the static json files in `./movies` as our content catalogue.
+The data used for this comes from two sources:
+- Typically, our own movie data would come from a database, but to simplify this, we use the static json files in `./movies` as our content catalogue.
 - OMDb movie metadata can be retrieved as follows:
     - `http://www.omdbapi.com/?i=<imdb movie id>&apikey=<apikey>&plot=full`
     - You can use the following API key: `68fd98ab` (Limited to 1000 requests per day)
@@ -45,32 +45,51 @@ The first task is to merge movie metadata from our systems with movie metadata f
 We want to be able to search movies in our catalogue. To that end, we implement a simple search that returns a movie object if **all** search terms are true. A search term is a query param in your REST call in the form of `<search_field>=<search value>`
 
 - If no search term is provided, return all movies
-- Search terms are **case-insensitve**
+- Search terms are **case-insensitive**
 - Search is performed on the merged json objects of movies
 - If `<search_field>` is of type `Number` or `String` in the movie metadata, the search matches if the values are equal, i.e. `?title=Sin City` matches `3532674.json`
 - If `<search_field>` is of type `Array` in the movie metadata, the search matches if the `<search value>` is contained in the array, i.e. `?director=Frank Miller` matches `3532674.json` / the corresponding OMBd object
 - Calling `GET /api/movies?<search_field>=<search value>` should return a JSON array representing all movies that match the search criteria
 
+## Additional Tasks
+
+The following tasks are optional but it would be nice to have at least one in case you have more time.
+
+### AWS Lambda Function
+
+Use the code you have written and create an [AWS Lambda function](https://aws.amazon.com/lambda/). 
+For setting up the Lambda function and the deployment please use [IaC](https://en.wikipedia.org/wiki/Infrastructure_as_code). 
+You are free to use any framework or tool for this task. The goal should be to have a deployed version of the service which can be used with a public URL.
+
+### Caching
+
+To improve response times it might be beneficial to add caching to the service. Go through your implementation and check where adding caching would make sense. Then pick an appropriate caching mechanism and implement it in your code. Please also take [TTLs](https://en.wikipedia.org/wiki/Time_to_live) and application scaling into account.
+
+### TypeScript
+
+Setup the project using TypeScript.
+
 ## Constraints
 
-- Use Python (minimum 3.5)
-- Do not introduce any system dependencies (databases, caches, search engines, docker, ..) to solve this task. This task is about your problem solving skills and not about creating a production ready system. It should not require more than `pip install` and `python <your_script>.py` to have a running service.
+- Use node.js in version 10+
+- Use ES7 or newer
+- Do not introduce any system dependencies (databases, caches, search engines, docker, ..) to solve this task. This task is about your problem solving skills and not about creating a production ready system. It should not require more than `npm install` and `npm start` to have a running service.
 - 72h after being added to the project, your pushing rights will be revoked and the latest commit of your implementation will be the basis for your evaluation.
-- Keep it simple: You are not expected to spend days on this - just proof that you know how to write great software in Python
+- We respect your time and encourage you to keep it simple: You are not expected to spend days on this - just proof that you know how to write great software in node.js
 
 ## Evaluation criteria
 
 In general you can think of the evaluation being a thorough peer review of your code. 
 You will be evaluated by a number of criteria, among others:
 
-- How well did you apply engineering best practices (general & Python specific)?
+- How well did you apply engineering best practices (general & node.js specific)?
 - Is the service working as intended?
 - How readable is your code?
 - Does the service solve the problem
     - correctly?
     - efficiently?
 - Is your code consistent in itself (styling, language constructs, ..)?
-- Appropriate use 3rd party modules
+- Appropriate use of 3rd party modules
 - We do **not** expect you to have a high test coverage, **BUT** it is important that you demonstrate that you know how to write testable code and provide a few tests that showcase this.
 - Proper use of git
 - Making good assumptions and documenting them
