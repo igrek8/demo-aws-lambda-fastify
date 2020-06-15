@@ -2,6 +2,7 @@ import { Logger as ILogger } from "fastify";
 import { flatten } from "flat";
 import { Inject, Service } from "typedi";
 
+import { CachedOmdbProvider } from "./CachedOmdbProvider";
 import { Movie } from "./engine/Movie";
 import { IJoynProvider } from "./IJoynProvider";
 import { IOmdbProvider } from "./IOmdbProvider";
@@ -10,14 +11,13 @@ import * as joyn from "./joyn";
 import { JoynProvider } from "./JoynProvider";
 import { Logger } from "./Logger";
 import * as omdb from "./omdb";
-import { OmdbProvider } from "./OmdbProvider";
 
 @Service()
 export class SearchEngine implements ISearchEngine {
   constructor(
     @Inject(() => Logger) protected readonly logger: ILogger,
     @Inject(() => JoynProvider) protected readonly joyn: IJoynProvider,
-    @Inject(() => OmdbProvider) protected readonly omdb: IOmdbProvider
+    @Inject(() => CachedOmdbProvider) protected readonly omdb: IOmdbProvider
   ) {}
 
   async getMovieById(joynIdOrImdbId: string): Promise<Movie | undefined> {
@@ -120,6 +120,6 @@ export class SearchEngine implements ISearchEngine {
     const r4 = rating.countStar4;
     const r5 = rating.countStar5;
     const value = (5 * r5 + 4 * r4 + 3 * r3 + 2 * r2 + 1 * r1) / (r1 + r2 + r3 + r4 + r5);
-    return { Source: "Joyn", Value: value.toFixed(2) };
+    return { Source: "Joyn", Value: value.toFixed(1) + "/5.0" };
   }
 }

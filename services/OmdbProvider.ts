@@ -1,19 +1,24 @@
+import { Logger as ILogger } from "fastify";
 import fetch from "node-fetch";
-import { Service } from "typedi";
+import { Inject, Service } from "typedi";
 
 import { IOmdbProvider } from "./IOmdbProvider";
 import { Logger } from "./Logger";
 import * as omdb from "./omdb";
 
-const { OMDB_BASE_URL, OMDB_ACCESS_TOKEN } = process.env;
-
 @Service()
 export class OmdbProvider implements IOmdbProvider {
-  constructor(protected logger: Logger) {}
+  @Inject("OMDB_BASE_URL")
+  protected readonly OMDB_BASE_URL!: string;
+
+  @Inject("OMDB_ACCESS_TOKEN")
+  protected readonly OMDB_ACCESS_TOKEN!: string;
+
+  constructor(@Inject(() => Logger) protected readonly logger: ILogger) {}
 
   async getMovieById(id: string): Promise<omdb.Movie | undefined> {
     this.logger.debug("fetching omdb for movie=%s", id);
-    const url = `${OMDB_BASE_URL}/?i=${id}&apikey=${OMDB_ACCESS_TOKEN}&plot=full`;
+    const url = `${this.OMDB_BASE_URL}/?i=${id}&apikey=${this.OMDB_ACCESS_TOKEN}&plot=full`;
     const res = await fetch(url);
     const isJSON = res.headers.get("content-type")?.startsWith("application/json");
     try {
