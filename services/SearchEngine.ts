@@ -5,7 +5,7 @@ import { Inject, Service } from "typedi";
 import { Movie } from "./engine/Movie";
 import { IJoynProvider } from "./IJoynProvider";
 import { IOmdbProvider } from "./IOmdbProvider";
-import { ISearchEngine } from "./ISearchEngine";
+import { ISearchEngine, ISearchEngineResponse } from "./ISearchEngine";
 import * as joyn from "./joyn";
 import { JoynProvider } from "./JoynProvider";
 import { Logger } from "./Logger";
@@ -28,12 +28,12 @@ export class SearchEngine implements ISearchEngine {
     return this.mergeMovie(joynMovie, omdbMovie);
   }
 
-  async getMoviesBySearch(search?: Record<string, string>): Promise<Movie[]> {
+  async getMoviesBySearch(search: Record<string, string>): Promise<ISearchEngineResponse<Movie>> {
     const movies: Movie[] = await this.getMovies();
-    if (!search) return movies;
+    if (Object.keys(search).length === 0) return { movies };
     const matched: Movie[] = movies.filter((movie) => this.isSearchMatch(movie, search));
-    if (matched.length > 0) return movies;
-    return movies;
+    if (matched.length > 0) return { movies: matched, matches: matched.length };
+    return { movies, matches: 0 };
   }
 
   protected async getMovies() {
@@ -50,17 +50,25 @@ export class SearchEngine implements ISearchEngine {
 
   protected isSearchMatch(movie: Movie, search: Record<string, string>): boolean {
     const obj: Record<string, number | string> = flatten(movie);
-    for (const [fieldId, fieldValue] of Object.entries(obj)) {
-      for (const [searchTerm, searchFilter] of Object.entries(search)) {
-        if (!this.isMatch(searchTerm, fieldId)) continue;
-        if (!this.isMatch(searchFilter, fieldValue)) return false;
+    const searchTerms = Object.entries(search);
+    const movieFields = Object.entries(obj);
+    for (const [searchTerm, searchFilter] of searchTerms) {
+      let isMatched = false;
+      for (const [fieldId, fieldValue] of movieFields) {
+        if (!this.isMatch(fieldId, searchTerm)) continue;
+        if (this.isEqual(searchFilter, fieldValue)) isMatched = true;
       }
+      return isMatched;
     }
-    return true;
+    return false;
   }
 
-  protected isMatch(a: string, b: string | number) {
-    return b.toString().toLowerCase().startsWith(a.toLowerCase());
+  protected isMatch(a: string, b: string) {
+    return a.toLowerCase().startsWith(b.toLowerCase());
+  }
+
+  protected isEqual(a: string, b: string | number) {
+    return b.toString().toLowerCase() === a.toLowerCase();
   }
 
   protected mergeMovie(joynMovie: joyn.Movie, omdbMovie: omdb.Movie): Movie {
@@ -111,7 +119,7 @@ export class SearchEngine implements ISearchEngine {
     const r3 = rating.countStar3;
     const r4 = rating.countStar4;
     const r5 = rating.countStar5;
-    const value = (5 * r1 + 4 * r2 + 3 * r3 + 2 * r4 + 1 * r5) / (r1 + r2 + r3 + r4 + r5);
+    const value = (5 * r5 + 4 * r4 + 3 * r3 + 2 * r2 + 1 * r1) / (r1 + r2 + r3 + r4 + r5);
     return { Source: "Joyn", Value: value.toFixed(2) };
   }
 }

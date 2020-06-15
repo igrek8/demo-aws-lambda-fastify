@@ -1,7 +1,7 @@
 import { Logger as ILogger } from "fastify";
 import { Service } from "typedi";
 
-import { app } from "..";
+import { app } from "../app";
 
 /**
  * Application logger

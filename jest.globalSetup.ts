@@ -1,3 +1,3 @@
-import "./";
+import "./app";
 
 module.exports = () => {};
