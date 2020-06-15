@@ -11,7 +11,7 @@ const { OMDB_BASE_URL, OMDB_ACCESS_TOKEN } = process.env;
 export class OmdbProvider implements IOmdbProvider {
   constructor(protected logger: Logger) {}
 
-  async findMovieById(id: string): Promise<omdb.Movie | undefined> {
+  async getMovieById(id: string): Promise<omdb.Movie | undefined> {
     this.logger.debug("fetching omdb for movie=%s", id);
     const url = `${OMDB_BASE_URL}/?i=${id}&apikey=${OMDB_ACCESS_TOKEN}&plot=full`;
     const res = await fetch(url);

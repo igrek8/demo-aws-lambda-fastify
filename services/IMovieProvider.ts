@@ -1,3 +1,3 @@
 export interface IMovieProvider<T> {
-  findMovieById(id: string): Promise<T | undefined>;
+  getMovieById(id: string): Promise<T | undefined>;
 }

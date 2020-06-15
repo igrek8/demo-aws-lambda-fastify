@@ -16,8 +16,8 @@ export class JoynProvider implements IJoynProvider {
     const dir = resolve(process.cwd(), "movies");
     this.logger.info("preloading movies from %s", dir);
     const entries = await fs.readdir(dir);
-    const joynMovies: { [joynId: string]: Movie } = {};
-    const imdbMovies: { [imdbId: string]: Movie } = {};
+    const joynMovies: Record<string, Movie> = {};
+    const imdbMovies: Record<string, Movie> = {};
     for await (const entry of entries) {
       const fp = join(dir, entry);
       const stat = await fs.stat(fp);
@@ -33,9 +33,14 @@ export class JoynProvider implements IJoynProvider {
     return { joynMovies, imdbMovies };
   }
 
-  async findMovieById(id: string): Promise<Movie | undefined> {
+  async getMovieById(id: string): Promise<Movie | undefined> {
     const { joynMovies, imdbMovies } = await this.preload;
     this.logger.debug("find movie id=%s", id);
     return joynMovies[id] ?? imdbMovies[id];
+  }
+
+  async getMovies(): Promise<Movie[]> {
+    const { joynMovies } = await this.preload;
+    return Object.values(joynMovies);
   }
 }
