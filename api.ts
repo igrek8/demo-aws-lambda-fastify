@@ -43,4 +43,6 @@ export function createAPI(app: FastifyInstance) {
       return movies;
     },
   });
+
+  return app;
 }

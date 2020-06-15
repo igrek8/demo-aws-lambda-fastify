@@ -7,16 +7,21 @@
   "license": "MIT",
   "devDependencies": {
     "@types/flat": "^5.0.1",
+    "@types/http-errors": "^1.6.3",
+    "@types/jest": "^26.0.0",
     "@types/node": "^14.0.13",
     "@types/node-fetch": "^2.5.7",
     "jest": "^26.0.1",
+    "rimraf": "^3.0.2",
+    "serverless": "^1.72.0",
+    "serverless-plugin-include-dependencies": "^4.1.0",
     "ts-jest": "^26.1.0",
     "ts-node": "^8.10.2",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.5",
+    "yarn": "^1.22.4"
   },
   "dependencies": {
-    "@types/http-errors": "^1.6.3",
-    "@types/jest": "^26.0.0",
+    "aws-lambda-fastify": "^1.4.3",
     "dotenv": "^8.2.0",
     "fastify": "^2.14.1",
     "flat": "^5.0.0",
@@ -27,6 +32,14 @@
     "typedi": "^0.8.0"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest --logHeapUsage --detectOpenHandles --bail",
+    "clean": "rimraf dist",
+    "build": "yarn clean && yarn build:ts",
+    "build:ts": "tsc --outDir dist",
+    "deploy": "yarn build && yarn deploy:aws",
+    "deploy:aws": "serverless deploy",
+    "start:dev": "ts-node bin/www",
+    "start:prod": " node dist/bin/www",
+    "start": "yarn build:ts && yarn start:prod"
   }
 }

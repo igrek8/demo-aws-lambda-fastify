@@ -48,7 +48,7 @@ describe("SearchEngine", () => {
   test("search by non-existing director", async () => {
     const se = Container.get(SearchEngine);
     await expect(se.getMoviesBySearch({ director: "Oliver Twist" })).resolves.toEqual({
-      matches: 4,
+      matches: 0,
       movies: expect.arrayContaining([
         expect.objectContaining({ id: 3532674 }),
         expect.objectContaining({ id: 5979300 }),

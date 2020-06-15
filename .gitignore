@@ -120,3 +120,6 @@ dist
 
 # jest
 !jest.config.js
+
+# Serverless directories
+.serverless
