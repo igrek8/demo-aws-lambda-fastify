@@ -20,6 +20,9 @@ export class JoynProvider implements IJoynProvider {
 
   constructor(@Inject(() => Logger) protected readonly logger: ILogger) {}
 
+  /**
+   * Load movies and use HashMaps to have `O(1)`
+   */
   private async loadMovies(): Promise<JoynProviderResponse> {
     this.logger.info("preloading movies from %s", this.MOVIES_DIR);
     const entries = await fs.readdir(this.MOVIES_DIR);
@@ -40,6 +43,9 @@ export class JoynProvider implements IJoynProvider {
     return { joynMovies, imdbMovies };
   }
 
+  /**
+   * Lazily load movies into the memory
+   */
   protected lazyLoad() {
     if (!this.cache) this.cache = this.loadMovies();
     return this.cache;

@@ -1,98 +1,112 @@
-# Movie Metadata Search
+# Movie Search Engine
 
-## Preface
+## [Task description](./docs/Task.md)
 
-Hello,
+## Prerequisites
 
-this is part of your interview with Joyn that aims to test your ability to write services that efficiently solve problems we have in our business.
+NodeJS
 
-Please read this document carefully before starting, as it outlines your task, the constraints and by what criteria you will be evaluated.
+```
+v12.10.0
+```
 
-Use git to document your work. When finished, please create a pull request on the `master` branch, according to the following naming convention: `<your name>-solution`
+Yarn
 
-We will look at the git history of your pull request to determine the way you approached this.  **Please do not squash commits or bundle many unrelated changes into one large commit.**
+```
+1.21.1
+```
 
-## The service
+Serverless
 
-You are tasked to implement a RESTful API that provides the following two basic functionalities to retrieve movie metadata from a content catalogue.
+```
+Framework Core: 1.72.0
+Plugin: 3.6.13
+SDK: 2.3.1
+Components: 2.30.14
+```
 
-The data used for this comes from two sources:
-- Typically, our own movie data would come from a database, but to simplify this, we use the static json files in `./movies` as our content catalogue.
-- OMDb movie metadata can be retrieved as follows:
-    - `http://www.omdbapi.com/?i=<imdb movie id>&apikey=<apikey>&plot=full`
-    - You can use the following API key: `68fd98ab` (Limited to 1000 requests per day)
-    - Please see http://www.omdbapi.com for details
+## Public API examples (AWS)
 
-#### Getting enriched movie metadata (title, description, ..) 
+- [Show movie with id 3532674](https://eb90rv74zd.execute-api.us-east-1.amazonaws.com/dev/api/movies/3532674)
+- [Show movies with title Sin City](https://eb90rv74zd.execute-api.us-east-1.amazonaws.com/dev/api/movies?title=Sin%20City)
+- [Show movies with director Frank Miller](https://eb90rv74zd.execute-api.us-east-1.amazonaws.com/dev/api/movies?director=Frank%20Miller)
+- [Show all movies](https://eb90rv74zd.execute-api.us-east-1.amazonaws.com/dev/api/movies)
 
-The first task is to merge movie metadata from our systems with movie metadata from the Open Movie Database (OMDb).
+## Task Outcome
 
-- Calling `GET /api/movies/:id` should return a JSON object representing the merged movie object.
-- `:id` is an alphanumeric value that can either refer to OMDb movie ids or our internal ids.
-- When merging the two objects with the same fields (i.e. both JSON objects have a `title` / `Title`), it depends on the name of the field, which metadata should be used.
-- The following rules apply, with capitalized field names (i.e. `Title` vs `title`) always referring to OMDb data
-    - `Title` overwrites `title`
-    - `Plot` overwrites `description`
-    - `duration` overwrites `Runtime`
-    - `userrating` will become part of `Ratings`, applying a similar logic than `Ratings` currently has
-    - `Director`, `Writer` and `Actors` should be transformed from `String` to an `String[]`
-    
-- Fields not covered by any of these rules should be merged into the resulting JSON without transformation
-- If fields are unclear, make reasonable assumptions and choose your implementation accordingly
-
-#### Search movies in our catalogue
-
-We want to be able to search movies in our catalogue. To that end, we implement a simple search that returns a movie object if **all** search terms are true. A search term is a query param in your REST call in the form of `<search_field>=<search value>`
-
-- If no search term is provided, return all movies
-- Search terms are **case-insensitive**
-- Search is performed on the merged json objects of movies
-- If `<search_field>` is of type `Number` or `String` in the movie metadata, the search matches if the values are equal, i.e. `?title=Sin City` matches `3532674.json`
-- If `<search_field>` is of type `Array` in the movie metadata, the search matches if the `<search value>` is contained in the array, i.e. `?director=Frank Miller` matches `3532674.json` / the corresponding OMBd object
-- Calling `GET /api/movies?<search_field>=<search value>` should return a JSON array representing all movies that match the search criteria
-
-## Additional Tasks
-
-The following tasks are optional but it would be nice to have at least one in case you have more time.
-
-### AWS Lambda Function
-
-Use the code you have written and create an [AWS Lambda function](https://aws.amazon.com/lambda/). 
-For setting up the Lambda function and the deployment please use [IaC](https://en.wikipedia.org/wiki/Infrastructure_as_code). 
-You are free to use any framework or tool for this task. The goal should be to have a deployed version of the service which can be used with a public URL.
-
-### Caching
-
-To improve response times it might be beneficial to add caching to the service. Go through your implementation and check where adding caching would make sense. Then pick an appropriate caching mechanism and implement it in your code. Please also take [TTLs](https://en.wikipedia.org/wiki/Time_to_live) and application scaling into account.
-
-### TypeScript
-
-Setup the project using TypeScript.
+- ✅ [AWS Lambda Function](./lambda.ts#L4)
+- ✅ Caching - [LRU cache is used with TTL](./services/CachedOmdbProvider.ts#L24:3). LRU can be replaced with Redis for scaling.
+- ✅ TypeScript
 
 ## Constraints
 
-- Use node.js in version 10+
-- Use ES7 or newer
-- Do not introduce any system dependencies (databases, caches, search engines, docker, ..) to solve this task. This task is about your problem solving skills and not about creating a production ready system. It should not require more than `npm install` and `npm start` to have a running service.
-- 72h after being added to the project, your pushing rights will be revoked and the latest commit of your implementation will be the basis for your evaluation.
-- We respect your time and encourage you to keep it simple: You are not expected to spend days on this - just proof that you know how to write great software in node.js
+- ✅ Use node.js in version 10+
+- ✅ Use ES7 or newer
+- ✅ Do not introduce any system dependencies (databases, caches, search engines, docker, ..) to solve this task. This task is about your problem solving skills and not about creating a production ready system. It should not require more than `npm install` and `npm start` to have a running service.
 
-## Evaluation criteria
+## Best practices
 
-In general you can think of the evaluation being a thorough peer review of your code. 
-You will be evaluated by a number of criteria, among others:
+- ✅SOLID principles
+- ✅Tested HTTP endpoints and integrations
+- ✅Code is prettified
+- ✅Strict TypeScript
+- ✅Serverless for AWS deploy
+- ✅`aws-lambda-fastify` to use fastify for lambda
+- ✅Git workflow
 
-- How well did you apply engineering best practices (general & node.js specific)?
-- Is the service working as intended?
-- How readable is your code?
-- Does the service solve the problem
-    - correctly?
-    - efficiently?
-- Is your code consistent in itself (styling, language constructs, ..)?
-- Appropriate use of 3rd party modules
-- We do **not** expect you to have a high test coverage, **BUT** it is important that you demonstrate that you know how to write testable code and provide a few tests that showcase this.
-- Proper use of git
-- Making good assumptions and documenting them
+## ✏️ Assumptions
 
+- [Convert joyn.Rating with 5 stars to omdb.Rating](./services/SearchEngine.ts#L151)
+- Use abstraction over implementation
+- Use dependency injector for testing/initialization
+- Use 12-factor config recommendation [.env](https://12factor.net/config)
+- Use serverless IaC to deploy AWS lambda
+- [Show a number of matches to indicate actual filtering](services/SearchEngine.ts#L50:5)
 
-### Good luck
+## Config
+
+Create .env with the content below. Set `OMDB_ACCESS_TOKEN` for OMDB integration.
+
+```
+HOST=0.0.0.0
+PORT=8080
+NODE_ENV=production
+OMDB_BASE_URL=http://www.omdbapi.com
+OMDB_ACCESS_TOKEN=___YOUR_TOKEN___
+LOG_LEVEL=debug
+LRU_SIZE=25
+LRU_MAX_AGE=432000
+MOVIES_DIR=movies
+```
+
+## Installation
+
+```bash
+yarn
+```
+
+## API
+
+Start server by running
+
+```
+yarn start
+```
+
+- [Show movie](docs/GetMovieById.md)
+- [Show all movies](docs/GetAllMovies.md)
+- [Search movies](docs/SearchMovies.md)
+
+## Deploy
+
+```
+yarn deploy
+```
+
+## For reviewers
+
+This repository has been developed to showcase my skills and knowledge in NodeJS.
+
+I am open to any feedback that would make me a better professonal.
+
+Thank you for your time to review this work 😉.

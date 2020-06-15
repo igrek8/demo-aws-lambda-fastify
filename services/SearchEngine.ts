@@ -12,6 +12,11 @@ import { JoynProvider } from "./JoynProvider";
 import { Logger } from "./Logger";
 import * as omdb from "./omdb";
 
+/**
+ * SearchEngine is a final composition that uses JoynProvider & OmdbProvider.
+ * It implements search by fields and search by id methods that return combined meta
+ * from Joyn & Omdb providers.
+ */
 @Service()
 export class SearchEngine implements ISearchEngine {
   constructor(
@@ -20,6 +25,10 @@ export class SearchEngine implements ISearchEngine {
     @Inject(() => CachedOmdbProvider) protected readonly omdb: IOmdbProvider
   ) {}
 
+  /**
+   * Searches for the movie
+   * @param joynIdOrImdbId joyn id or imdb id
+   */
   async getMovieById(joynIdOrImdbId: string): Promise<Movie | undefined> {
     const joynMovie = await this.joyn.getMovieById(joynIdOrImdbId);
     if (!joynMovie) return undefined;
@@ -28,6 +37,11 @@ export class SearchEngine implements ISearchEngine {
     return this.mergeMovie(joynMovie, omdbMovie);
   }
 
+  /**
+   * Searches for movies based on search fields.
+   * If search terms are provided the response will contain `matches` property that describes how many matches
+   * the search has found.
+   */
   async getMoviesBySearch(search: Record<string, string>): Promise<ISearchEngineResponse<Movie>> {
     const movies: Movie[] = await this.getMovies();
     if (Object.keys(search).length === 0) return { movies };
@@ -55,22 +69,40 @@ export class SearchEngine implements ISearchEngine {
     for (const [searchTerm, searchFilter] of searchTerms) {
       let isMatched = false;
       for (const [fieldId, fieldValue] of movieFields) {
+        /**
+         * Since the structure is flat, we must at least find one match for the search term.
+         * For example: ?director=Frank Miller would try to match Director.0, Director.1 and so on.
+         * Therefore, Frank Miller would match Director.0
+         */
         if (!this.isMatch(fieldId, searchTerm)) continue;
         if (this.isEqual(searchFilter, fieldValue)) isMatched = true;
+        if (isMatched) break;
       }
       return isMatched;
     }
     return false;
   }
 
+  /**
+   * Matches if the search_term matches the field id
+   */
   protected isMatch(a: string, b: string) {
+    /**
+     * As per requirement, the fields are case-insensitive
+     */
     return a.toLowerCase().startsWith(b.toLowerCase());
   }
 
+  /**
+   * Matches if search_term matches the field value
+   */
   protected isEqual(a: string, b: string | number) {
     return b.toString().toLowerCase() === a.toLowerCase();
   }
 
+  /**
+   * Merges JoynMovie & OmdbMovie with some transformations
+   */
   protected mergeMovie(joynMovie: joyn.Movie, omdbMovie: omdb.Movie): Movie {
     return {
       // JOYN
@@ -113,6 +145,9 @@ export class SearchEngine implements ISearchEngine {
     };
   }
 
+  /**
+   * Maps joyn.Rting to match omdb.Rating interface
+   */
   protected mapJoynRaitngToOmdbRaiting(rating: joyn.Rating): omdb.Rating {
     const r1 = rating.countStar1;
     const r2 = rating.countStar2;
