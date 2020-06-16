@@ -46,13 +46,13 @@ Components: 2.30.14
 
 ## Best practices
 
-- ✅SOLID principles
-- ✅Tested HTTP endpoints and integrations
-- ✅Code is prettified
-- ✅Strict TypeScript
-- ✅Serverless for AWS deploy
-- ✅`aws-lambda-fastify` to use fastify for lambda
-- ✅Git workflow
+- ✅ SOLID principles
+- ✅ Tested HTTP endpoints and integrations
+- ✅ Code is prettified
+- ✅ Strict TypeScript
+- ✅ Serverless for AWS deploy
+- ✅ `aws-lambda-fastify` to use fastify for lambda
+- ✅ Git workflow
 
 ## ✏️ Assumptions
 
