@@ -38,7 +38,7 @@
     "build": "yarn clean && yarn build:ts",
     "build:ts": "tsc --outDir dist",
     "deploy": "yarn build && yarn deploy:aws",
-    "deploy:aws": "serverless deploy",
+    "deploy:aws": "serverless deploy --stage prod --region eu-central-1",
     "start:dev": "ts-node bin/www",
     "start:prod": " node dist/bin/www",
     "start": "yarn build:ts && yarn start:prod"

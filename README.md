@@ -27,10 +27,10 @@ Components: 2.30.14
 
 ## Public API examples (AWS)
 
-- [Show movie with id 3532674](https://eb90rv74zd.execute-api.us-east-1.amazonaws.com/dev/api/movies/3532674)
-- [Show movies with title Sin City](https://eb90rv74zd.execute-api.us-east-1.amazonaws.com/dev/api/movies?title=Sin%20City)
-- [Show movies with director Frank Miller](https://eb90rv74zd.execute-api.us-east-1.amazonaws.com/dev/api/movies?director=Frank%20Miller)
-- [Show all movies](https://eb90rv74zd.execute-api.us-east-1.amazonaws.com/dev/api/movies)
+- [Show movie with id 3532674](https://tqafc8hy0h.execute-api.eu-central-1.amazonaws.com/prod/api/movies/3532674)
+- [Show movies with title Sin City](https://tqafc8hy0h.execute-api.eu-central-1.amazonaws.com/prod/api/movies?title=Sin%20City)
+- [Show movies with director Frank Miller](https://tqafc8hy0h.execute-api.eu-central-1.amazonaws.com/prod/api/movies?director=Frank%20Miller)
+- [Show all movies](https://tqafc8hy0h.execute-api.eu-central-1.amazonaws.com/prod/api/movies)
 
 ## Task Outcome
 
