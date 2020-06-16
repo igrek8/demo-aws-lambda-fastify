@@ -78,9 +78,9 @@ export class SearchEngine implements ISearchEngine {
         if (this.isEqual(searchFilter, fieldValue)) isMatched = true;
         if (isMatched) break;
       }
-      return isMatched;
+      if (!isMatched) return false;
     }
-    return false;
+    return true;
   }
 
   /**
